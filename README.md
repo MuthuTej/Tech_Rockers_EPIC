@@ -381,7 +381,7 @@ Two roles are supported. Role assignment is determined at account creation and s
 
 **tech_rockers**
 
-This system was designed and developed by team Tech_Rockers as part of the VLSI/ASIC Workflow Automation Hackathon.
+This system was designed and developed by team Tech_Rockers as part of the EPIC_Build-A-Thon Hackathon.
 
 ---
 
