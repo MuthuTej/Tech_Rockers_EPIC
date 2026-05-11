@@ -51,7 +51,7 @@ export default function Effort() {
         <Stat
           label="Variance"
           value={`${totals.diff >= 0 ? '+' : ''}${totals.diff}h (${totals.pct >= 0 ? '+' : ''}${totals.pct}%)`}
-          color={totals.diff > 0 ? '#EF4444' : '#046307'}
+          color={totals.diff > 0 ? '#EF4444' : '#86efac'}
         />
       </div>
 
@@ -78,7 +78,7 @@ export default function Effort() {
                 const isOver = variance > 0;
                 return (
                   <tr key={b.id} className="border-t border-white/[0.06]" style={{ boxShadow: `inset 3px 0 0 0 ${stageColor}` }}>
-                    <Td className="font-mono text-[12px]" style={{ color: '#0B6E4F' }}>{b.id}</Td>
+                    <Td className="font-mono text-[12px]" style={{ color: '#3b82f6' }}>{b.id}</Td>
                     <Td className="font-medium">{b.name}</Td>
                     <Td>
                       <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold"
@@ -112,7 +112,7 @@ export default function Effort() {
                         <span className="text-muted-foreground text-xs">—</span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-xs font-semibold"
-                          style={{ color: isOver ? '#EF4444' : '#046307' }}>
+                          style={{ color: isOver ? '#EF4444' : '#86efac' }}>
                           {isOver ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
                           {Math.abs(variance)}h ({Math.abs(pct)}%)
                         </span>
@@ -122,7 +122,7 @@ export default function Effort() {
                       <Td>
                         {isEditing ? (
                           <div className="flex gap-1">
-                            <button onClick={() => saveEdit(b)} className="p-1.5 rounded text-[#046307] hover:bg-white/5"><Check size={14} /></button>
+                            <button onClick={() => saveEdit(b)} className="p-1.5 rounded text-[#86efac] hover:bg-white/5"><Check size={14} /></button>
                             <button onClick={() => setEditingId(null)} className="p-1.5 rounded text-muted-foreground hover:bg-white/5"><X size={14} /></button>
                           </div>
                         ) : (

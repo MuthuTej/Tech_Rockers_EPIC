@@ -2,114 +2,131 @@ import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Layers, Kanban, Clock, Users, CheckCircle, ScrollText,
-  ChevronsLeft, ChevronsRight, LogOut, Cpu,
+  ChevronsLeft, ChevronsRight, LogOut, Cpu, 
+  Briefcase, Calendar, MessageSquare, Box, Cloud, Bell, HelpCircle, Activity
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useAppData } from '../../context/AppDataContext';
 import { Avatar, RoleBadge } from '../UI/Badge';
 
+// Matching the icon list loosely to the ones in the image, but preserving routes
 const items = [
   { to: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
-  { to: '/blocks', label: 'Blocks', Icon: Layers },
-  { to: '/kanban', label: 'Kanban', Icon: Kanban },
-  { to: '/effort', label: 'Effort', Icon: Clock },
+  { to: '/blocks', label: 'Blocks', Icon: Briefcase },
+  { to: '/kanban', label: 'Kanban', Icon: CheckCircle },
+  { to: '/effort', label: 'Effort', Icon: MessageSquare },
   { to: '/resources', label: 'Resources', Icon: Users },
-  { to: '/approvals', label: 'Approvals', Icon: CheckCircle },
-  { to: '/audit', label: 'Audit Log', Icon: ScrollText },
+  { to: '/approvals', label: 'Approvals', Icon: Box },
+  { to: '/audit', label: 'Audit Log', Icon: Cloud },
 ];
 
 export function Sidebar({ collapsed, setCollapsed }) {
   const { user, logout } = useAuth();
   const { blocks } = useAppData();
   const pendingCount = blocks.filter((b) => b.stage === 'REVIEW').length;
-  const width = collapsed ? 64 : 240;
+  const width = collapsed ? 80 : 260;
 
   return (
     <aside
-      className="h-screen sticky top-0 flex flex-col bg-white border-r border-gray-200 transition-[width] duration-200"
+      className="h-screen sticky top-0 flex flex-col bg-white border-r border-gray-100 transition-[width] duration-300 shadow-[2px_0_8px_-4px_rgba(0,0,0,0.1)] z-50"
       style={{ width }}
     >
-      {/* Logo */}
-      <div className="flex items-center gap-2 px-4 py-5 border-b border-gray-200">
-        <LogoMark />
+      {/* Logo / User Profile Section */}
+      <div className="flex flex-col items-center justify-center py-8">
+        <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center text-white text-3xl font-bold shadow-lg mb-4">
+          {user ? user.initials.charAt(0) : 'C'}
+        </div>
         {!collapsed && (
-          <div className="text-lg font-bold tracking-tight">
-            Layout<span style={{ color: '#000000' }}>IQ</span>
+          <div className="text-center animate-in fade-in zoom-in duration-300">
+            <div className="text-sm text-gray-500">Welcome,</div>
+            <div className="text-lg font-bold text-gray-900 uppercase tracking-wide">{user ? user.name : 'CRAFTUI'}</div>
           </div>
         )}
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto scrollbar-thin">
-        {items.map(({ to, label, Icon }) => (
-          <NavLink
-            key={to}
-            to={to}
-            title={collapsed ? label : undefined}
-            className={({ isActive }) =>
-              [
-                'group relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
-                isActive
-                  ? 'bg-black/5 text-black'
-                  : 'text-muted-foreground hover:bg-gray-50 hover:text-foreground',
-              ].join(' ')
-            }
-          >
-            {({ isActive }) => (
-              <>
-                {isActive && (
-                  <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-r" style={{ background: '#000000' }} />
-                )}
-                <Icon size={18} className="shrink-0" />
-                {!collapsed && <span className="truncate">{label}</span>}
-                {label === 'Approvals' && pendingCount > 0 && (
-                  <span
-                    className={`${collapsed ? 'absolute top-1.5 right-1.5 h-1.5 w-1.5' : 'ml-auto h-2 w-2'} rounded-full pulse-dot`}
-                    style={{ background: '#EF4444' }}
-                  />
-                )}
-              </>
-            )}
-          </NavLink>
-        ))}
-      </nav>
+      <div className="px-6 py-2">
+        {!collapsed && <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Main Menu</div>}
+        <nav className="flex-1 space-y-2 overflow-y-auto scrollbar-thin">
+          {items.map(({ to, label, Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              title={collapsed ? label : undefined}
+              className={({ isActive }) =>
+                [
+                  'group flex items-center gap-4 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 relative',
+                  isActive
+                    ? 'bg-blue-50 text-blue-600 shadow-sm'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900',
+                  collapsed ? 'justify-center' : ''
+                ].join(' ')
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <span className="absolute -left-6 top-1/2 -translate-y-1/2 h-8 w-1 rounded-r-full bg-blue-600" />
+                  )}
+                  <Icon size={20} className={isActive ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"} strokeWidth={isActive ? 2.5 : 2} />
+                  {!collapsed && <span className="truncate">{label}</span>}
+                  
+                  {label === 'Approvals' && pendingCount > 0 && !collapsed && (
+                     <span className="ml-auto bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs font-bold">{pendingCount}</span>
+                  )}
+                  {label === 'Approvals' && pendingCount > 0 && collapsed && (
+                    <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                  )}
+                </>
+              )}
+            </NavLink>
+          ))}
+        </nav>
+      </div>
 
-      {/* User */}
-      <div className="border-t border-gray-200 p-3">
-        {user && (
-          <div className={`flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
-            <Avatar initials={user.initials} />
-            {!collapsed && (
-              <div className="min-w-0 flex-1">
-                <div className="text-xs font-semibold text-foreground truncate">{user.name}</div>
-                <div className="mt-0.5"><RoleBadge role={user.role} /></div>
+      <div className="flex-1"></div>
+
+      {/* Upcoming Events Section (Mock data to match design) */}
+      {!collapsed && (
+        <div className="px-6 pb-6">
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Upcoming events</div>
+          <div className="space-y-4">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2 text-xs font-semibold text-blue-600">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
+                05:48AM
               </div>
-            )}
-            {!collapsed && (
-              <button onClick={logout} title="Sign out" className="p-2 text-muted-foreground hover:text-foreground">
-                <LogOut size={16} />
-              </button>
-            )}
+              <div className="text-sm font-semibold text-gray-800">Meeting with a client</div>
+              <div className="text-xs text-gray-400">Tell how to boost website traffic</div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2 text-xs font-semibold text-yellow-500">
+                <div className="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
+                10:28AM
+              </div>
+              <div className="text-sm font-semibold text-gray-800">New project discussion</div>
+              <div className="text-xs text-gray-400">Business Cards Does Your Business</div>
+            </div>
           </div>
-        )}
-        <button
-          onClick={() => setCollapsed((v) => !v)}
-          className="mt-3 w-full flex items-center justify-center gap-2 rounded-md py-1.5 text-xs text-muted-foreground hover:bg-gray-50 hover:text-foreground"
-        >
-          {collapsed ? <ChevronsRight size={14} /> : <><ChevronsLeft size={14} /> Collapse</>}
-        </button>
+        </div>
+      )}
+
+      {/* User / Logout */}
+      <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setCollapsed((v) => !v)}
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex-1 flex justify-center"
+          >
+            {collapsed ? <ChevronsRight size={18} /> : <><ChevronsLeft size={18} className="mr-2"/> Collapse</>}
+          </button>
+          {!collapsed && (
+            <button onClick={logout} title="Sign out" className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors ml-2">
+              <LogOut size={18} />
+            </button>
+          )}
+        </div>
       </div>
     </aside>
-  );
-}
-
-function LogoMark() {
-  return (
-    <div
-      className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
-      style={{ background: 'linear-gradient(135deg, #222222, #000000)' }}
-    >
-      <Cpu size={18} color="#FFFFFF" strokeWidth={2.5} />
-    </div>
   );
 }

@@ -7,7 +7,7 @@ import { StageBadge, ComplexityPill, Avatar } from '../components/UI/Badge';
 import { Modal } from '../components/UI/Modal';
 import { useToast } from '../components/UI/Toast';
 
-const STAGE_LIST = ['NOT STARTED','FLOORPLAN','IN PROGRESS','DRC','LVS','REVIEW','REJECTED','COMPLETED'];
+const STAGE_LIST = ['NOT STARTED', 'FLOORPLAN', 'IN PROGRESS', 'DRC', 'LVS', 'REVIEW', 'REJECTED', 'COMPLETED'];
 
 export default function Kanban() {
   const { user } = useAuth();
@@ -38,7 +38,7 @@ export default function Kanban() {
           <section key={stage} className="liq-card overflow-hidden" style={{ borderLeft: `4px solid ${cfg.color}` }}>
             <header
               className="flex items-center gap-3 px-4 py-2.5"
-              style={{ background: '#252D3D' }}
+              style={{ background: '#fcfcfc' }}
             >
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: cfg.color }} />
               <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: cfg.color }}>{cfg.label}</h3>
@@ -71,7 +71,7 @@ export default function Kanban() {
         {confirm && (
           <div>
             <div className="text-sm">
-              <span className="font-mono text-[#0B6E4F]">{confirm.block.id}</span> — {confirm.block.name}
+              <span className="font-mono text-[#3b82f6]">{confirm.block.id}</span> — {confirm.block.name}
             </div>
             <div className="mt-4 flex items-center gap-3">
               <StageBadge stage={confirm.block.stage} size="lg" />
@@ -94,7 +94,7 @@ function KanbanCard({ block, user, onAdvance }) {
   const cfg = stageConfig[block.stage];
   const eng = getEngineerById(block.assignedTo);
   const isMine = user.role === 'engineer' && block.assignedTo === user.id;
-  const canAdvance = isMine && !['REVIEW','COMPLETED','REJECTED'].includes(block.stage);
+  const canAdvance = isMine && !['REVIEW', 'COMPLETED', 'REJECTED'].includes(block.stage);
   const showSubmit = isMine && block.stage === 'LVS';
 
   return (
@@ -103,7 +103,7 @@ function KanbanCard({ block, user, onAdvance }) {
       style={{ width: 280, borderLeft: `3px solid ${cfg.color}` }}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="text-[11px] font-mono" style={{ color: '#0B6E4F' }}>{block.id}</div>
+        <div className="text-[11px] font-mono" style={{ color: '#3b82f6' }}>{block.id}</div>
         <ComplexityPill complexity={block.complexity} />
       </div>
       <div className="mt-1 text-sm font-semibold leading-snug">{block.name}</div>
@@ -134,7 +134,7 @@ function KanbanCard({ block, user, onAdvance }) {
 
       <div className="mt-3 pt-3 border-t border-white/5">
         {user.role === 'manager' && (
-          <button className="liq-btn liq-btn-ghost w-full text-xs py-1.5"><Eye size={12}/> View Details</button>
+          <button className="liq-btn liq-btn-ghost w-full text-xs py-1.5"><Eye size={12} /> View Details</button>
         )}
         {showSubmit && (
           <button onClick={() => onAdvance(block)} className="liq-btn w-full text-xs py-1.5" style={{ background: '#EAB308', color: '#0B0F1A' }}>
@@ -143,7 +143,7 @@ function KanbanCard({ block, user, onAdvance }) {
         )}
         {canAdvance && !showSubmit && (
           <button onClick={() => onAdvance(block)} className="liq-btn w-full text-xs py-1.5"
-            style={{ border: '1px solid #0B6E4F', color: '#0B6E4F', background: 'transparent' }}>
+            style={{ border: '1px solid #3b82f6', color: '#3b82f6', background: 'transparent' }}>
             Advance Stage <ArrowRight size={12} />
           </button>
         )}

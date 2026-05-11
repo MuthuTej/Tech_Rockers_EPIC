@@ -43,10 +43,10 @@ export function ToastProvider({ children }) {
 }
 
 const styles = {
-  success: { bar: '#046307', Icon: CheckCircle2 },
-  error:   { bar: '#EF4444', Icon: XCircle },
+  success: { bar: '#86efac', Icon: CheckCircle2 },
+  error: { bar: '#EF4444', Icon: XCircle },
   warning: { bar: '#EAB308', Icon: AlertTriangle },
-  info:    { bar: '#0B6E4F', Icon: Info },
+  info: { bar: '#3b82f6', Icon: Info },
 };
 
 function ToastItem({ toast, onClose }) {

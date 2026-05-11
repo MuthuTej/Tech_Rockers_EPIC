@@ -60,7 +60,7 @@ export default {
           lvs: "#06B6D4",
           review: "#EAB308",
           rejected: "#6B7280",
-          completed: "#046307",
+          completed: "#86efac",
         },
       },
       borderRadius: {

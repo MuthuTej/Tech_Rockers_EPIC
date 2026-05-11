@@ -61,7 +61,7 @@ export default function AuditLog() {
               {visible.map((a) => (
                 <tr key={a.id} className="border-t border-white/[0.06]">
                   <Td className="text-[11px] font-mono text-muted-foreground whitespace-nowrap">{formatTime(a.timestamp)}</Td>
-                  <Td className="font-mono text-[12px]" style={{ color: '#0B6E4F' }}>{a.blockId}</Td>
+                  <Td className="font-mono text-[12px]" style={{ color: '#3b82f6' }}>{a.blockId}</Td>
                   <Td>{a.blockName}</Td>
                   <Td><ActionBadge action={a.action} /></Td>
                   <Td>{a.fromStage ? <StagePill stage={a.fromStage} /> : <span className="text-muted-foreground">—</span>}</Td>

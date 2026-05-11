@@ -25,9 +25,14 @@ function RootRedirect() {
   return <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />;
 }
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 export default function App() {
+  const clientId = import.meta.env.GOOGLE_ClientID;
+  
   return (
-    <AuthProvider>
+    <GoogleOAuthProvider clientId={clientId}>
+      <AuthProvider>
       <AppDataProvider>
         <ToastProvider>
           <BrowserRouter>
@@ -47,5 +52,6 @@ export default function App() {
         </ToastProvider>
       </AppDataProvider>
     </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }

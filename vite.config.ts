@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react()].filter(Boolean),
+  envPrefix: ['VITE_', 'GOOGLE_', 'managerMail'],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

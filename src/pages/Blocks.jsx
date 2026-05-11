@@ -66,7 +66,7 @@ export default function Blocks() {
         <Select value={fNode} onChange={setFNode} placeholder="All nodes" options={['28nm', '40nm', '65nm', '180nm'].map(n => ({ value: n, label: n }))} />
         <Select value={fEng} onChange={setFEng} placeholder="All engineers" options={engineers.filter(e => e.role === 'engineer').map(e => ({ value: e.id, label: e.name }))} />
         <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-          <input type="checkbox" checked={unassignedOnly} onChange={(e) => setUnassignedOnly(e.target.checked)} className="accent-[#0B6E4F]" />
+          <input type="checkbox" checked={unassignedOnly} onChange={(e) => setUnassignedOnly(e.target.checked)} className="accent-[#3b82f6]" />
           Unassigned only
         </label>
         <button
@@ -147,7 +147,7 @@ function BlockTable({ blocks, onView, canEdit, compact }) {
                 className="cursor-pointer hover:bg-white/[0.03] border-t border-white/[0.06]"
                 style={{ boxShadow: `inset 3px 0 0 0 ${stageColor}` }}
               >
-                <Td className="font-mono text-[12px]" style={{ color: '#0B6E4F' }}>{b.id}</Td>
+                <Td className="font-mono text-[12px]" style={{ color: '#3b82f6' }}>{b.id}</Td>
                 <Td className="font-medium">{b.name}</Td>
                 <Td className="text-muted-foreground">{b.type}</Td>
                 <Td>
@@ -365,7 +365,7 @@ function AddBlockDrawer({ open, onClose, onCreate, engineers, blocks }) {
             ))}
           </div>
           <div className="text-xs text-muted-foreground mt-2">
-            Estimated Hours: {cfg.baseHours} × {cfg.factor} = <span className="text-[#0B6E4F] font-semibold">{estHours}h</span>
+            Estimated Hours: {cfg.baseHours} × {cfg.factor} = <span className="text-[#3b82f6] font-semibold">{estHours}h</span>
           </div>
         </Field>
         <Field label="Assign Engineer (optional)">

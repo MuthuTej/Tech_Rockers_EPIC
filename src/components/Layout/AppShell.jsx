@@ -56,7 +56,7 @@ export function AppShell({ children }) {
   if (!user) return null;
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar />
