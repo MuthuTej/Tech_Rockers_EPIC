@@ -6,26 +6,18 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  const loginWithGoogle = useCallback((credential) => {
+  const loginWithGoogle = useCallback(async (credential) => {
     try {
       const decoded = jwtDecode(credential);
       const email = decoded.email;
       const name = decoded.name;
-      const initials = name ? name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'U';
+      const picture = decoded.picture;
       
-      const managerMail = import.meta.env.managerMail;
-      const role = email === managerMail ? 'manager' : 'engineer';
-      
-      setUser({
-        id: email,
-        name: name || email,
-        email: email,
-        role: role,
-        initials: initials,
-        picture: decoded.picture
-      });
+      const { default: api } = await import('../api/client');
+      const response = await api.post('/users/auth', { email, name, picture });
+      setUser(response.data);
     } catch (err) {
-      console.error('Failed to decode Google credential', err);
+      console.error('Failed to authenticate with backend', err);
     }
   }, []);
 

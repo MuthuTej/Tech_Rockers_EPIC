@@ -18,10 +18,12 @@ function nextAuditId() {
 
 export function AppDataProvider({ children }) {
   const [blocks, setBlocks] = useState([]);
+  const [engineersList, setEngineersList] = useState([]);
   const [auditLog, setAuditLog] = useState(initialAuditLog);
 
   useEffect(() => {
     api.get('/blocks').then(res => setBlocks(res.data)).catch(console.error);
+    api.get('/users').then(res => setEngineersList(res.data.filter(u => u.role === 'engineer'))).catch(console.error);
   }, []);
 
   const pushAudit = useCallback((entry) => {
@@ -63,6 +65,10 @@ export function AppDataProvider({ children }) {
 
   const approveBlock = useCallback(
     (blockId, actor) => {
+      if (actor.role !== 'manager') {
+        console.warn('Approve block blocked: user is not a manager');
+        return;
+      }
       updateBlockAPI(blockId, (b) => {
         const ts = new Date().toISOString();
         pushAudit({
@@ -81,6 +87,10 @@ export function AppDataProvider({ children }) {
 
   const rejectBlock = useCallback(
     (blockId, comment, actor) => {
+      if (actor.role !== 'manager') {
+        console.warn('Reject block blocked: user is not a manager');
+        return;
+      }
       updateBlockAPI(blockId, (b) => {
         const ts = new Date().toISOString();
         pushAudit({
@@ -118,9 +128,14 @@ export function AppDataProvider({ children }) {
 
   const assignBlock = useCallback(
     (blockId, engineerId, actor) => {
+      // Only managers are allowed to assign engineers to blocks
+      if (actor.role !== 'manager') {
+        console.warn('Assign operation blocked: user is not a manager');
+        return;
+      }
       updateBlockAPI(blockId, (b) => {
         const ts = new Date().toISOString();
-        const target = engineers.find((e) => e.id === engineerId);
+        const target = engineersList.find((e) => e.id === engineerId);
         pushAudit({
           timestamp: ts, blockId: b.id, blockName: b.name,
           action: 'ASSIGN', fromStage: b.stage, toStage: b.stage,
@@ -130,11 +145,15 @@ export function AppDataProvider({ children }) {
         return { ...b, assignedTo: engineerId };
       });
     },
-    [pushAudit]
+    [pushAudit, engineersList]
   );
 
   const overrideEstHours = useCallback(
     (blockId, newHours, actor) => {
+      if (actor.role !== 'manager') {
+        console.warn('Override hours blocked: user is not a manager');
+        return;
+      }
       updateBlockAPI(blockId, (b) => {
         const ts = new Date().toISOString();
         pushAudit({
@@ -151,6 +170,10 @@ export function AppDataProvider({ children }) {
 
   const createBlock = useCallback(
     async (input, actor) => {
+      if (actor.role !== 'manager') {
+        console.warn('Create block blocked: user is not a manager');
+        return;
+      }
       const ts = new Date().toISOString();
       const factor = complexityConfig[input.complexity].factor;
       const base = complexityConfig[input.complexity].baseHours;
@@ -190,10 +213,10 @@ export function AppDataProvider({ children }) {
 
   const value = useMemo(
     () => ({
-      blocks, auditLog, engineers, stageConfig, complexityConfig,
+      blocks, auditLog, engineers: engineersList, stageConfig, complexityConfig,
       advanceStage, approveBlock, rejectBlock, reopenBlock, assignBlock, createBlock, overrideEstHours,
     }),
-    [blocks, auditLog, advanceStage, approveBlock, rejectBlock, reopenBlock, assignBlock, createBlock, overrideEstHours]
+    [blocks, auditLog, engineersList, advanceStage, approveBlock, rejectBlock, reopenBlock, assignBlock, createBlock, overrideEstHours]
   );
 
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;

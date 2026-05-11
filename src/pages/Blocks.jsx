@@ -203,10 +203,22 @@ function Td({ children, className, style }) {
 }
 
 function BlockDetailDrawer({ block, onClose }) {
+  const { user } = useAuth();
+  const { engineers, assignBlock } = useAppData();
+  const toast = useToast();
+  const [isAssigning, setIsAssigning] = useState(false);
+
   if (!block) return <Drawer open={false} onClose={onClose} />;
   const eng = getEngineerById(block.assignedTo);
   const pct = block.estHours ? Math.min(100, Math.round((block.actualHours / block.estHours) * 100)) : 0;
   const cfg = stageConfig[block.stage];
+
+  const handleAssign = (engId) => {
+    assignBlock(block.id, engId, user);
+    toast.success('Engineer Assigned', `${block.id} assigned to ${getEngineerById(engId).name}`);
+    setIsAssigning(false);
+  };
+
   return (
     <Drawer
       open={true}
@@ -235,13 +247,52 @@ function BlockDetailDrawer({ block, onClose }) {
         </div>
       </div>
 
-      {eng && (
-        <div className="liq-card p-4 mb-5 flex items-center gap-3">
-          <Avatar initials={eng.initials} size={40} />
-          <div>
-            <div className="text-sm font-semibold">{eng.name}</div>
-            <div className="text-xs text-muted-foreground">{eng.email}</div>
+       {eng ? (
+        <div className="liq-card p-4 mb-5">
+          <div className="flex items-center justify-between mb-3">
+             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Assigned Engineer</div>
+             {user.role === 'manager' && (
+               <button onClick={() => setIsAssigning(!isAssigning)} className="text-blue-500 text-[11px] font-semibold hover:underline">
+                 {isAssigning ? 'Cancel' : 'Change'}
+               </button>
+             )}
           </div>
+          <div className="flex items-center gap-3">
+            <Avatar initials={eng.initials} size={40} />
+            <div>
+              <div className="text-sm font-semibold">{eng.name}</div>
+              <div className="text-xs text-muted-foreground">{eng.email}</div>
+            </div>
+          </div>
+          {isAssigning && (
+            <div className="mt-4 pt-4 border-t border-white/5 space-y-2">
+               {engineers.filter(e => e.id !== block.assignedTo).map(e => (
+                 <button key={e.id} onClick={() => handleAssign(e.id)} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors text-left">
+                   <Avatar initials={e.initials} size={24} />
+                   <span className="text-xs">{e.name}</span>
+                 </button>
+               ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="liq-card p-4 mb-5">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">Assigned Engineer</div>
+          {user.role === 'manager' ? (
+            <div className="space-y-2">
+               <div className="text-sm text-red-400 font-medium mb-2 flex items-center gap-2">
+                 <span className="h-1.5 w-1.5 rounded-full bg-red-400" /> Unassigned
+               </div>
+               {engineers.map(e => (
+                 <button key={e.id} onClick={() => handleAssign(e.id)} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors text-left">
+                   <Avatar initials={e.initials} size={24} />
+                   <span className="text-xs">{e.name}</span>
+                 </button>
+               ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground italic">Unassigned</div>
+          )}
         </div>
       )}
 
