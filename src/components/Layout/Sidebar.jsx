@@ -33,8 +33,12 @@ export function Sidebar({ collapsed, setCollapsed }) {
     >
       {/* Logo / User Profile Section */}
       <div className="flex flex-col items-center justify-center py-8">
-        <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center text-white text-3xl font-bold shadow-lg mb-4">
-          {user ? user.initials.charAt(0) : 'C'}
+        <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center text-white text-3xl font-bold shadow-lg mb-4 overflow-hidden">
+          {user?.picture ? (
+            <img src={user.picture} alt={user.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          ) : (
+            user ? user.initials.charAt(0) : 'C'
+          )}
         </div>
         {!collapsed && (
           <div className="text-center animate-in fade-in zoom-in duration-300">
