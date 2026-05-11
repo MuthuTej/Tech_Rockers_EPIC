@@ -381,10 +381,10 @@ Two roles are supported. Role assignment is determined at account creation and s
 
 **tech_rockers**
 
-This system was designed and developed by team tech_rockers as part of the VLSI/ASIC Workflow Automation Hackathon.
+This system was designed and developed by team Tech_Rockers as part of the VLSI/ASIC Workflow Automation Hackathon.
 
 ---
 
 <p align="center">
-  Developed by <strong>tech_rockers</strong>
+  Developed by <strong>Tech_Rockers</strong>
 </p>
