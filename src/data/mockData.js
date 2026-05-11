@@ -31,13 +31,28 @@ export const techNodeColors = {
 
 export const TAPEOUT_DATE = new Date('2026-05-30T00:00:00Z');
 
+// Static fallback engineers (used only for initialAuditLog builder below).
+// The live list is fetched from /api/users and replaces this cache at runtime.
 export const engineers = [
-  { id: 'E001', name: 'Arjun Mehta', initials: 'AM', role: 'engineer', email: 'arjun@layoutiq.com', maxHours: 100 },
-  { id: 'E002', name: 'Priya Nair', initials: 'PN', role: 'engineer', email: 'priya@layoutiq.com', maxHours: 100 },
-  { id: 'E003', name: 'Karthik Rajan', initials: 'KR', role: 'engineer', email: 'karthik@layoutiq.com', maxHours: 100 },
-  { id: 'E004', name: 'Divya Suresh', initials: 'DS', role: 'engineer', email: 'divya@layoutiq.com', maxHours: 100 },
-  { id: 'M001', name: 'Vikram Iyer', initials: 'VI', role: 'manager', email: 'vikram@layoutiq.com', maxHours: 0 },
+  { id: 'muthu1410raj@gmail.com',     email: 'muthu1410raj@gmail.com',     name: 'Arjun Mehta',   initials: 'AM', role: 'engineer', maxHours: 120 },
+  { id: 'priya.nair@layoutiq.com',    email: 'priya.nair@layoutiq.com',    name: 'Priya Nair',    initials: 'PN', role: 'engineer', maxHours: 120 },
+  { id: 'karthik.rajan@layoutiq.com', email: 'karthik.rajan@layoutiq.com', name: 'Karthik Rajan', initials: 'KR', role: 'engineer', maxHours: 120 },
+  { id: 'divya.suresh@layoutiq.com',  email: 'divya.suresh@layoutiq.com',  name: 'Divya Suresh',  initials: 'DS', role: 'engineer', maxHours: 120 },
+  { id: 'sneha.patel@layoutiq.com',   email: 'sneha.patel@layoutiq.com',   name: 'Sneha Patel',   initials: 'SP', role: 'engineer', maxHours: 120 },
 ];
+
+// Live cache — replaced by API response in AppDataContext on mount.
+let _engineersCache = [...engineers];
+
+export function setEngineersCache(list) {
+  _engineersCache = list;
+}
+
+export function getEngineerById(id) {
+  if (!id) return null;
+  // id is now an email (= user.id = block.assignedTo)
+  return _engineersCache.find((e) => e.id === id || e.email === id) || null;
+}
 
 export const blocks = [
   {
@@ -240,10 +255,6 @@ export function nextStage(stage) {
   const idx = STAGE_ORDER.indexOf(stage);
   if (idx < 0 || idx >= STAGE_ORDER.length - 1) return null;
   return STAGE_ORDER[idx + 1];
-}
-
-export function getEngineerById(id) {
-  return engineers.find((e) => e.id === id) || null;
 }
 
 export function formatTime(ts) {

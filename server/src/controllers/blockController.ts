@@ -32,10 +32,11 @@ export const createBlock = async (req: Request, res: Response) => {
 
 export const updateBlock = async (req: Request, res: Response) => {
   try {
+    const { _id, __v, ...body } = req.body;
     const updatedBlock = await Block.findOneAndUpdate(
       { id: req.params.id },
-      req.body,
-      { new: true, runValidators: true }
+      { $set: body },
+      { returnDocument: 'after', runValidators: true }
     );
     if (!updatedBlock) return res.status(404).json({ message: 'Block not found' });
     res.json(updatedBlock);
