@@ -1,11 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid,
+  RadialBarChart, RadialBar, PolarAngleAxis
 } from 'recharts';
 import { useAuth } from '../context/AuthContext';
 import { useAppData } from '../context/AppDataContext';
 import { stageConfig, getEngineerById, formatTime } from '../data/mockData';
 import { StageBadge, Avatar } from '../components/UI/Badge';
+import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -25,6 +27,8 @@ function ManagerDashboard() {
     };
   }, [blocks]);
 
+  const pendingApprovals = blocks.filter(b => b.stage === 'REVIEW');
+
   // Mock data for the smooth line charts to match the UI image
   const activityData = [
     { name: 'Jan', current: 120, previous: 80 },
@@ -41,20 +45,13 @@ function ManagerDashboard() {
     { name: 'Dec', current: 290, previous: 250 },
   ];
 
-  const plannedData = [
-    { name: 'Jan', val: 50 },
-    { name: 'Feb', val: 40 },
-    { name: 'Mar', val: 80 },
-    { name: 'Apr', val: 30 },
-    { name: 'Jun', val: 70 },
-  ];
-
+  const maintainabilityData = [{ name: 'Score', value: 85, fill: '#10B981' }]; // Mock score of 85/100
   const recentBlocks = blocks.slice(0, 5);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-800">Dashboard</h2>
+        <h2 className="text-xl font-bold text-gray-800">Manager Control Center</h2>
         <div className="flex gap-2 text-sm text-gray-500 font-medium bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-100">
           <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-800">Day</button>
           <button className="px-3 py-1 rounded-md hover:bg-gray-50">Week</button>
@@ -69,9 +66,84 @@ function ManagerDashboard() {
         <KpiCard title="Est Hours" value={`${kpis.totalEst}h`} subtext="Week comparison" subValue="-2.1%" isPositive={false} color="red" />
       </div>
 
-      {/* Charts Section */}
+      {/* Approvals & Maintainability Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
+        {/* Approvals Widget */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2 flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+              Action Needed: Approvals
+              {pendingApprovals.length > 0 && (
+                <span className="bg-red-100 text-red-600 py-0.5 px-2.5 rounded-full text-xs font-bold">{pendingApprovals.length} Pending</span>
+              )}
+            </h3>
+            <Link to="/approvals" className="text-blue-600 hover:text-blue-700 text-sm font-semibold">View All →</Link>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto max-h-[300px] space-y-3 pr-2 scrollbar-thin">
+             {pendingApprovals.length > 0 ? (
+               pendingApprovals.map(b => {
+                 const eng = getEngineerById(b.assignedTo);
+                 return (
+                   <div key={b.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                     <div className="flex items-center gap-4">
+                       <div className="w-10 h-10 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center font-bold text-sm">
+                         {b.id.substring(3)}
+                       </div>
+                       <div>
+                         <div className="font-bold text-gray-800">{b.name}</div>
+                         <div className="text-xs text-gray-500 font-medium">By {eng ? eng.name : 'Unknown'} • {b.techNode}</div>
+                       </div>
+                     </div>
+                     <Link to="/approvals" className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors">
+                       Review
+                     </Link>
+                   </div>
+                 );
+               })
+             ) : (
+               <div className="h-full flex flex-col items-center justify-center text-gray-400 py-8">
+                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mb-3 opacity-50"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                 <p className="font-medium">You're all caught up!</p>
+               </div>
+             )}
+          </div>
+        </div>
+
+        {/* Maintainability Index Widget */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center">
+          <h3 className="text-lg font-bold text-gray-800 w-full text-left mb-2">Maintainability</h3>
+          <p className="text-xs text-gray-500 w-full text-left mb-6">Overall system code & layout health</p>
+          
+          <div className="relative w-48 h-48 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadialBarChart cx="50%" cy="50%" innerRadius="75%" outerRadius="100%" barSize={16} data={maintainabilityData} startAngle={90} endAngle={-270}>
+                <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
+                <RadialBar minAngle={15} background={{ fill: '#F3F4F6' }} clockWise dataKey="value" cornerRadius={8} />
+              </RadialBarChart>
+            </ResponsiveContainer>
+            <div className="absolute flex flex-col items-center justify-center">
+              <span className="text-4xl font-black text-gray-800">85</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Score</span>
+            </div>
+          </div>
+          
+          <div className="mt-6 w-full grid grid-cols-2 gap-4">
+             <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+               <div className="text-xs text-gray-500 font-semibold mb-1">DRC Warnings</div>
+               <div className="text-lg font-bold text-gray-800 text-left">12</div>
+             </div>
+             <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+               <div className="text-xs text-gray-500 font-semibold mb-1">Density Var</div>
+               <div className="text-lg font-bold text-green-600 text-left">Low</div>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-bold text-gray-800">Pipeline Activity</h3>
           </div>
@@ -91,88 +163,52 @@ function ManagerDashboard() {
 
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold text-gray-800">Projected Completion</h3>
-            <button className="text-gray-400 hover:text-gray-600">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-            </button>
+            <h3 className="text-lg font-bold text-gray-800">Latest Active Blocks</h3>
           </div>
-          <div className="h-72 w-full">
-            <ResponsiveContainer>
-              <AreaChart data={plannedData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 12}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 12}} />
-                <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                <Area type="monotone" dataKey="val" stroke="#8B5CF6" strokeWidth={3} strokeDasharray="5 5" fillOpacity={1} fill="url(#colorVal)" />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs text-gray-400 uppercase border-b border-gray-100">
+                <tr>
+                  <th className="pb-3 font-semibold">Block</th>
+                  <th className="pb-3 font-semibold">Engineer</th>
+                  <th className="pb-3 font-semibold">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentBlocks.map((b, i) => {
+                  const eng = getEngineerById(b.assignedTo);
+                  const isCompleted = b.stage === 'COMPLETED';
+                  const isReview = b.stage === 'REVIEW';
+                  
+                  return (
+                    <tr key={b.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
+                      <td className="py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 font-mono text-xs">
+                            {b.id.substring(0,3)}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-800">{b.name}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3 text-gray-600 font-medium">
+                        {eng ? eng.name : 'Unassigned'}
+                      </td>
+                      <td className="py-3">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] uppercase font-bold
+                          ${isCompleted ? 'bg-green-50 text-green-700' : 
+                            isReview ? 'bg-yellow-50 text-yellow-700' : 
+                            'bg-blue-50 text-blue-700'}`}>
+                          {stageConfig[b.stage]?.label || b.stage}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-        </div>
-      </div>
-
-      {/* Table Section */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-bold text-gray-800">Latest Active Blocks</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-400 uppercase border-b border-gray-100">
-              <tr>
-                <th className="pb-3 font-semibold">Block</th>
-                <th className="pb-3 font-semibold">Engineer</th>
-                <th className="pb-3 font-semibold">Node</th>
-                <th className="pb-3 font-semibold">Effort</th>
-                <th className="pb-3 font-semibold text-right">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentBlocks.map((b, i) => {
-                const eng = getEngineerById(b.assignedTo);
-                const isCompleted = b.stage === 'COMPLETED';
-                const isReview = b.stage === 'REVIEW';
-                
-                return (
-                  <tr key={b.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
-                    <td className="py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 font-mono text-xs">
-                          {b.id.substring(0,3)}
-                        </div>
-                        <div>
-                          <div className="font-semibold text-gray-800">{b.name}</div>
-                          <div className="text-xs text-gray-500 font-mono">{b.id}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-4 text-gray-600 font-medium">
-                      {eng ? eng.name : 'Unassigned'}
-                    </td>
-                    <td className="py-4 text-gray-600">
-                      {b.techNode}
-                    </td>
-                    <td className="py-4 font-semibold text-gray-800">
-                      {b.actualHours} / {b.estHours}h
-                    </td>
-                    <td className="py-4 text-right">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold
-                        ${isCompleted ? 'bg-green-50 text-green-700' : 
-                          isReview ? 'bg-yellow-50 text-yellow-700' : 
-                          'bg-blue-50 text-blue-700'}`}>
-                        {stageConfig[b.stage]?.label || b.stage}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
         </div>
       </div>
     </div>
