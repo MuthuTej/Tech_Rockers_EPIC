@@ -22,34 +22,46 @@
 
 ## Table of Contents
 
-- [Motivation](#motivation)
+- [Project Title & Team](#project-title--team)
 - [Problem Statement](#problem-statement)
+- [Application Flow](#application-flow)
+- [Tech Stack](#tech-stack)
+- [UI Screenshots](#ui-screenshots)
+- [Features Implemented](#features-implemented)
 - [System Architecture](#system-architecture)
-- [Application Workflow](#application-workflow)
 - [Block Lifecycle](#block-lifecycle)
-- [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 - [API Reference](#api-reference)
 - [Role-Based Access Control](#role-based-access-control)
-- [Team](#team)
+- [Known Issues / Limitations](#known-issues--limitations)
 
 ---
 
-## Motivation
+## Project Title & Team
 
-In semiconductor chip design (VLSI/ASIC), the physical layout of a microchip is divided into many discrete architectural blocks. Each block must be meticulously designed and pass stringent verification checks — including Design Rule Checks (DRC) and Layout Versus Schematic (LVS) — before the entire chip can be integrated and submitted for fabrication.
+**Project:** VLSI/ASIC Design Workflow Management System
 
-Large engineering teams struggle to coordinate this effort at scale. Generic project management tools such as Jira or Trello lack the domain-specific vocabulary and workflow enforcement required for physical design work. They do not understand the concept of a DRC-clean block, they cannot enforce stage-gated advancement through a verification pipeline, and they offer no mechanism for structured manager approval tied to domain artifacts.
+**Team Name:** tech_rockers
 
-This platform replaces spreadsheet-driven coordination with a purpose-built system that speaks the language of semiconductor engineers while giving managers high-level, real-time visibility into pipeline health, resource allocation, and critical delays.
+**Hackathon:** Epic Buildathon
+
+| Role | Name |
+|---|---|
+| Team Lead | *(add name)* |
+| Member | *(add name)* |
+| Member | *(add name)* |
+
+> **Institution:** *(add institution name)*
 
 ---
 
 ## Problem Statement
 
-Current analog and mixed-signal layout teams manage all coordination through shared Excel files and email threads. This approach creates four systemic failures at scale:
+In semiconductor chip design (VLSI/ASIC), the physical layout of a microchip is divided into many discrete architectural blocks. Each block must be meticulously designed and pass stringent verification checks — including Design Rule Checks (DRC) and Layout Versus Schematic (LVS) — before the entire chip can be integrated and submitted for fabrication.
+
+Large engineering teams currently manage all coordination through shared Excel files and email threads. This approach creates four systemic failures at scale:
 
 | Problem | Impact |
 |---|---|
@@ -58,13 +70,107 @@ Current analog and mixed-signal layout teams manage all coordination through sha
 | Fragmented approval processes | Manager sign-offs happen over email, creating untraceable bottlenecks |
 | Resource misallocation | No mechanism to detect double-assignment or identify unassigned critical blocks |
 
+Generic tools such as Jira or Trello lack the domain-specific vocabulary and workflow enforcement required for physical design work. This platform replaces spreadsheet-driven coordination with a purpose-built system that speaks the language of semiconductor engineers while giving managers real-time visibility into pipeline health, resource allocation, and critical delays.
+
+---
+
+## Application Flow
+
+### Step 1 — Authentication
+Both managers and engineers log in via **Google OAuth 2.0**. On first login, an account is created and a role is assigned. A JWT is issued for all subsequent API calls.
+
+### Step 2 — Role-Based Dashboard Routing
+| Role | Landing Page |
+|---|---|
+| Manager | KPI Dashboard — aggregate metrics, pipeline health, block queue |
+| Engineer | Filtered Kanban Board — only their assigned blocks |
+
+### Step 3 — Block Creation & Assignment (Manager)
+The manager creates a design block (e.g. `ALU_CORE`, `MEM_CTRL`) and assigns it to an engineer with an estimated hours budget.
+
+### Step 4 — Stage Advancement (Engineer)
+The engineer works through the ordered pipeline:
+```
+NOT STARTED → FLOORPLAN → IN PROGRESS → DRC → LVS → REVIEW
+```
+Each transition is timestamped and logged in `stageHistory`. Stages cannot be skipped — this is enforced at the API layer.
+
+### Step 5 — Effort Logging (Engineer)
+At any stage, the engineer logs actual hours worked against the manager-set estimate. This powers the estimated vs. actual hours KPI on the manager dashboard.
+
+### Step 6 — Submit for Review (Engineer)
+Once LVS is complete, the engineer submits the block for manager review. The block is **locked** — no edits are possible until the manager acts.
+
+### Step 7 — Approval Decision (Manager)
+The manager reviews the block from the Approval Panel:
+- **Approve** → Block moves to `COMPLETED` and is ready for chip integration.
+- **Reject** → A comment is required. The block returns to the engineer's queue with feedback attached.
+
+### Step 8 — Rework (Engineer, if rejected)
+The engineer reads the manager's comment, reopens the block, and resumes work from the `IN PROGRESS` stage.
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| Frontend | React.js 18 | Component-based UI, role-aware rendering |
+| State Management | React Context API | Global auth state and user session |
+| HTTP Client | Axios | REST API communication with interceptors |
+| Backend | Node.js v20 + Express.js | REST API server, middleware pipeline |
+| Authentication | Passport.js + Google OAuth 2.0 | Identity verification and session management |
+| Authorization | JWT (JSON Web Tokens) | Stateless role-based route protection |
+| Database | MongoDB Atlas | Document storage for blocks, users, effort logs |
+| ODM | Mongoose | Schema enforcement and query abstraction |
+| Styling | Tailwind CSS | Utility-first UI styling |
+| Build Tool | Vite | Frontend dev server and bundler |
+| Language | TypeScript | Type-safe frontend development |
+| Environment | dotenv | Secrets and configuration management |
+
+---
+
+## UI Screenshots
+
+| Page | Description | Screenshot |
+|---|---|---|
+| **Manager Login** | Google OAuth entry point for managers | ![Manager Login](assets/managerlogin.png) |
+| **Employee Login** | Google OAuth entry point for engineers | ![Employee Login](assets/employeelogin.png) |
+| **Manager Dashboard** | KPI metrics — active blocks, hours, pipeline summary | ![Dashboard](assets/dashboard.png) |
+| **Kanban Board** | Engineer's stage-gated block view | ![Kanban](assets/kanban.png) |
+| **Add Block** | Manager creates a new design block and assigns engineer | ![Add Block](assets/addBlock.png) |
+| **Approval Status** | Manager reviews and approves/rejects submitted blocks | ![Approval Status](assets/approvalstatus.png) |
+| **Effort Logs** | Engineer logs actual hours against estimated hours | ![Logs](assets/logs.png) |
+
+---
+
+## Features Implemented
+
+### Mandatory Modules
+
+| # | Module | Status |
+|---|---|---|
+| 1 | **Google OAuth 2.0 Authentication** — login, JWT issuance, role-based session | ✅ Complete |
+| 2 | **Role-Based Access Control** — Engineer and Manager roles with route guards | ✅ Complete |
+| 3 | **Block Lifecycle Management** — stage-gated pipeline (NOT STARTED → COMPLETED) | ✅ Complete |
+| 4 | **Effort Logging** — actual vs. estimated hours tracked per block per engineer | ✅ Complete |
+| 5 | **Manager Approval Workflow** — submit, approve, reject with required comments | ✅ Complete |
+| 6 | **KPI Dashboard** — real-time aggregate metrics for managers | ✅ Complete |
+
+### Additional Features
+
+- `stageHistory` — every stage transition is timestamped and stored on the block document
+- Block locking — blocks are read-only while in REVIEW, preventing race conditions
+- Reopen flow — rejected blocks require an explicit reopen action before rework
+- DRC fail loop — blocks can cycle back from DRC to IN PROGRESS without penalty
+- Filtered views — engineers only see their assigned blocks; managers see all
+- Assignment panel — managers can reassign blocks and update estimated hours
+
 ---
 
 ## System Architecture
 
 The system follows a three-tier MERN architecture with a dedicated authentication layer using Google OAuth 2.0 and role-based middleware protecting all API routes.
-
-### Architecture Diagram
 
 ```mermaid
 graph TB
@@ -115,41 +221,6 @@ graph TB
 
 ---
 
-## Application Workflow
-
-The platform enforces two separate workflows depending on the authenticated user's role.
-
-### Manager Workflow
-
-```mermaid
-graph TB
-    A([Manager Logs In\nGoogle OAuth 2.0])
-    A --> B[KPI Dashboard\n─────────────────\nTotal active blocks\nEstimated vs actual hours\nBlocks per stage summary\nCritical delay flags]
-    B --> C[Pipeline Monitor\n─────────────────\nIdentify stalled stages\nView blocks per stage]
-    B --> D[Assignment Panel\n─────────────────\nAssign blocks to engineers\nSet estimated hours]
-    C --> E[Review Queue\n─────────────────\nBlocks submitted by engineers\narriving here locked for edits]
-    E --> F{Manager Decision}
-    F -->|Approve| G([COMPLETED\nBlock fully signed off])
-    F -->|Reject| H([REJECTED\nComment required\nReturns to engineer queue])
-```
-
-### Engineer Workflow
-
-```mermaid
-graph TB
-    A([Engineer Logs In\nGoogle OAuth 2.0])
-    A --> B[Filtered Kanban Board\n─────────────────\nShows only assigned blocks]
-    B --> C[Stage Advancement\n─────────────────\nNOT STARTED → FLOORPLAN → IN PROGRESS → DRC → LVS\nEach transition timestamped in stageHistory]
-    C --> D[Effort Logging\n─────────────────\nLog actual hours against\nmanagement-set estimate]
-    D --> E[Submit for Review\n─────────────────\nBlock locks\nManager is notified\nEngineer cannot edit until outcome]
-    E --> F{Manager Decision}
-    F -->|Approved| G([COMPLETED\nNo further action needed])
-    F -->|Rejected| H[Feedback Attached\n─────────────────\nEngineer must REOPEN\nbefore making adjustments]
-    H -->|Reopen and Rework| C
-```
-
----
-
 ## Block Lifecycle
 
 Every design block moves through a strict, ordered pipeline. Stages cannot be skipped. The state machine is enforced at the API layer.
@@ -174,28 +245,12 @@ graph LR
 
 ---
 
-## Technology Stack
-
-| Layer | Technology | Purpose |
-|---|---|---|
-| Frontend | React.js 18 | Component-based UI, role-aware rendering |
-| State Management | React Context API | Global auth state and user session |
-| HTTP Client | Axios | REST API communication with interceptors |
-| Backend | Node.js + Express.js | REST API server, middleware pipeline |
-| Authentication | Passport.js + Google OAuth 2.0 | Identity verification and session management |
-| Authorization | JWT (JSON Web Tokens) | Stateless role-based route protection |
-| Database | MongoDB Atlas | Document storage for blocks, users, effort logs |
-| ODM | Mongoose | Schema enforcement and query abstraction |
-| Environment | dotenv | Secrets and configuration management |
-
----
-
 ## Project Structure
 
 ```
 vlsi-workflow-system/
 |
-+-- client/                          # React.js frontend
++-- client/                          # React.js frontend (TypeScript + Vite)
 |   +-- public/
 |   |   +-- index.html
 |   +-- src/
@@ -245,6 +300,7 @@ vlsi-workflow-system/
 |   +-- app.js
 |   +-- server.js
 |
++-- assets/                          # Screenshots and banner images
 +-- .env.example
 +-- .gitignore
 +-- package.json
@@ -257,7 +313,7 @@ vlsi-workflow-system/
 
 ### Prerequisites
 
-- Node.js >= 18.x
+- Node.js >= 18.x (v20 recommended)
 - npm >= 9.x
 - MongoDB Atlas account (or local MongoDB instance)
 - Google Cloud Console project with OAuth 2.0 credentials
@@ -285,11 +341,11 @@ cd ../client
 npm install
 ```
 
-4. Configure environment variables (see [Environment Variables](#environment-variables)):
+4. Configure environment variables:
 
 ```bash
 cp .env.example .env
-# Edit .env with your credentials
+# Edit .env with your credentials — see Environment Variables section below
 ```
 
 5. Start the development servers:
@@ -310,9 +366,11 @@ The client will be available at `http://localhost:5173` and the API server at `h
 
 ## Environment Variables
 
-Create a `.env` file in the `/server` directory based on the following template:
+Create a `.env` file in the `/server` directory based on `.env.example`. **Never commit real credentials.**
 
 ```env
+# .env.example
+
 # Server
 PORT=5000
 NODE_ENV=development
@@ -321,6 +379,7 @@ NODE_ENV=development
 MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/vlsi-workflow
 
 # Google OAuth 2.0
+# Create credentials at: https://console.cloud.google.com/apis/credentials
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
@@ -332,6 +391,8 @@ JWT_EXPIRES_IN=7d
 # Client Origin (for CORS)
 CLIENT_ORIGIN=http://localhost:5173
 ```
+
+> **For judges:** Copy `.env.example` to `.env` and fill in your own Google OAuth credentials and MongoDB URI. No real values are committed to this repository.
 
 ---
 
@@ -364,24 +425,32 @@ Two roles are supported. Role assignment is determined at account creation and s
 
 | Capability | Engineer | Manager |
 |---|---|---|
-| View own assigned blocks | Yes | Yes |
-| View all blocks | No | Yes |
-| Create blocks | No | Yes |
-| Assign engineers to blocks | No | Yes |
-| Advance block stage | Yes | No |
-| Log effort hours | Yes | No |
-| Submit block for review | Yes | No |
-| Approve or reject blocks | No | Yes |
-| Access KPI dashboard | No | Yes |
-| View all engineers | No | Yes |
+| View own assigned blocks | ✅ | ✅ |
+| View all blocks | ❌ | ✅ |
+| Create blocks | ❌ | ✅ |
+| Assign engineers to blocks | ❌ | ✅ |
+| Advance block stage | ✅ | ❌ |
+| Log effort hours | ✅ | ❌ |
+| Submit block for review | ✅ | ❌ |
+| Approve or reject blocks | ❌ | ✅ |
+| Access KPI dashboard | ❌ | ✅ |
+| View all engineers | ❌ | ✅ |
+
+---
+
+## Known Issues / Limitations
+
+- Role assignment is currently manual (set directly in the database). A self-serve role selection UI on first login is planned but not yet implemented.
+- The KPI dashboard does not yet support date-range filtering; all metrics are computed over the full dataset.
+- Email or in-app notifications when a block is submitted for review or rejected are not yet implemented.
+- No pagination on the block list endpoint; performance may degrade with very large datasets.
+- The DRC fail loop (DRC → IN PROGRESS) does not yet enforce a maximum retry count.
 
 ---
 
 ## Team
 
-**tech_rockers**
-
-This system was designed and developed by team tech_rockers as part of the Epic Buildathon Hackathon.
+**tech_rockers** — Epic Buildathon Hackathon
 
 ---
 
