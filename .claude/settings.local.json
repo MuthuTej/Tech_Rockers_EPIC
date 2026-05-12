@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(timeout 8 npm start)",
+      "Bash(npm start *)",
+      "Bash(curl -s http://localhost:5000/api/blocks)",
+      "Bash(kill %1)",
+      "Bash(node -e ' *)",
+      "Bash(npx ts-node *)",
+      "Bash(pkill -f \"ts-node\")",
+      "Bash(npx tsc *)",
+      "Bash(npx dotenvx *)",
+      "Bash(mongosh *)"
+    ]
+  }
+}

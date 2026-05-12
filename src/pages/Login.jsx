@@ -9,10 +9,8 @@ export default function Login() {
   const [view, setView] = useState('employee'); // 'employee' or 'manager'
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSuccess = (credentialResponse) => {
-    loginWithGoogle(credentialResponse.credential);
-    // Note: The context synchronously updates `user`, but React state updates are asynchronous.
-    // We can rely on a `useEffect` in AppShell/App to handle the redirect, or navigate directly.
+  const handleSuccess = async (credentialResponse) => {
+    await loginWithGoogle(credentialResponse.credential, view === 'manager' ? 'manager' : 'engineer');
     navigate('/dashboard');
   };
 
