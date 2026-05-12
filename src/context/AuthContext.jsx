@@ -14,24 +14,23 @@ export function AuthProvider({ children }) {
     }
   });
 
-  const loginWithGoogle = useCallback(async (credential) => {
+  const loginWithGoogle = useCallback(async (credential, selectedRole = 'engineer') => {
     try {
-      const { email, name, picture } = jwtDecode(credential);
+      const { email: rawEmail, name, picture } = jwtDecode(credential);
+      const email = rawEmail.trim().toLowerCase();
 
       // 1. Set user immediately from JWT so navigation doesn't block
-      const managerMail = (import.meta.env.managerMail || '').trim();
-      const role = email.trim() === managerMail ? 'manager' : 'engineer';
       const initials = name
         ? name.split(' ').map((n) => n[0]).join('').toUpperCase().substring(0, 2)
         : email.substring(0, 2).toUpperCase();
 
-      const optimistic = { id: email, name, email, role, initials, picture: picture || '' };
+      const optimistic = { id: email, name, email, role: selectedRole, initials, picture: picture || '' };
       localStorage.setItem('layoutiq_user', JSON.stringify(optimistic));
       localStorage.setItem('layoutiq_credential', credential);
       setUser(optimistic);
 
       // 2. Sync with backend — creates user if new, returns confirmed role
-      const { data } = await api.post('/auth/google', { email, name, picture });
+      const { data } = await api.post('/auth/google', { email, name, picture, role: selectedRole });
       const synced = {
         id:       data.email,
         name:     data.name,

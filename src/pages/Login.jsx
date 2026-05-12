@@ -10,7 +10,7 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState('');
 
   const handleSuccess = async (credentialResponse) => {
-    await loginWithGoogle(credentialResponse.credential);
+    await loginWithGoogle(credentialResponse.credential, view === 'manager' ? 'manager' : 'engineer');
     navigate('/dashboard');
   };
 

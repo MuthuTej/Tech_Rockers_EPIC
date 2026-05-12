@@ -9,7 +9,9 @@
       "Bash(node -e ' *)",
       "Bash(npx ts-node *)",
       "Bash(pkill -f \"ts-node\")",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(npx dotenvx *)",
+      "Bash(mongosh *)"
     ]
   }
 }

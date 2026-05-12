@@ -7,20 +7,22 @@ import { User } from './models/User';
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 // Real emails — assignedTo must match user.id (= email) for filters to work
-const MGR  = 'prieyanmn@gmail.com';
-const E1   = 'muthu1410raj@gmail.com';   // Arjun Mehta  (Muthuraj)
+const MGR1 = 'prieyanmn@gmail.com';
+const MGR2 = 'muthu1410raj@gmail.com';   // second manager
+const E1   = 'lokithk93@gmail.com';       // Lokith — real engineer account
 const E2   = 'priya.nair@layoutiq.com';
 const E3   = 'karthik.rajan@layoutiq.com';
 const E4   = 'divya.suresh@layoutiq.com';
 const E5   = 'sneha.patel@layoutiq.com';
 
 const users = [
-  { id: MGR, email: MGR, name: 'Vikram Iyer',   initials: 'VI', role: 'manager',  picture: '', maxHours: 0   },
-  { id: E1,  email: E1,  name: 'Arjun Mehta',   initials: 'AM', role: 'engineer', picture: '', maxHours: 120 },
-  { id: E2,  email: E2,  name: 'Priya Nair',    initials: 'PN', role: 'engineer', picture: '', maxHours: 120 },
-  { id: E3,  email: E3,  name: 'Karthik Rajan', initials: 'KR', role: 'engineer', picture: '', maxHours: 120 },
-  { id: E4,  email: E4,  name: 'Divya Suresh',  initials: 'DS', role: 'engineer', picture: '', maxHours: 120 },
-  { id: E5,  email: E5,  name: 'Sneha Patel',   initials: 'SP', role: 'engineer', picture: '', maxHours: 120 },
+  { id: MGR1, email: MGR1, name: 'Vikram Iyer',   initials: 'VI', role: 'manager',  picture: '', maxHours: 0   },
+  { id: MGR2, email: MGR2, name: 'Muthuraj T',    initials: 'MT', role: 'manager',  picture: '', maxHours: 0   },
+  { id: E1,   email: E1,   name: 'Lokith K',      initials: 'LK', role: 'engineer', picture: '', maxHours: 120 },
+  { id: E2,   email: E2,   name: 'Priya Nair',    initials: 'PN', role: 'engineer', picture: '', maxHours: 120 },
+  { id: E3,   email: E3,   name: 'Karthik Rajan', initials: 'KR', role: 'engineer', picture: '', maxHours: 120 },
+  { id: E4,   email: E4,   name: 'Divya Suresh',  initials: 'DS', role: 'engineer', picture: '', maxHours: 120 },
+  { id: E5,   email: E5,   name: 'Sneha Patel',   initials: 'SP', role: 'engineer', picture: '', maxHours: 120 },
 ];
 
 const blocks = [
@@ -32,11 +34,11 @@ const blocks = [
     createdAt: '2026-04-01T09:00:00Z',
     stageHistory: [
       { stage: 'NOT STARTED', timestamp: '2026-04-01T09:00:00Z', actor: 'Vikram Iyer' },
-      { stage: 'FLOORPLAN',   timestamp: '2026-04-02T10:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'IN PROGRESS', timestamp: '2026-04-03T11:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'DRC',         timestamp: '2026-04-05T14:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'LVS',         timestamp: '2026-04-07T09:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'REVIEW',      timestamp: '2026-04-08T11:00:00Z', actor: 'Arjun Mehta' },
+      { stage: 'FLOORPLAN',   timestamp: '2026-04-02T10:00:00Z', actor: 'Lokith K' },
+      { stage: 'IN PROGRESS', timestamp: '2026-04-03T11:00:00Z', actor: 'Lokith K' },
+      { stage: 'DRC',         timestamp: '2026-04-05T14:00:00Z', actor: 'Lokith K' },
+      { stage: 'LVS',         timestamp: '2026-04-07T09:00:00Z', actor: 'Lokith K' },
+      { stage: 'REVIEW',      timestamp: '2026-04-08T11:00:00Z', actor: 'Lokith K' },
       { stage: 'COMPLETED',   timestamp: '2026-04-09T15:00:00Z', actor: 'Vikram Iyer' },
     ],
   },
@@ -109,11 +111,11 @@ const blocks = [
     createdAt: '2026-04-01T11:00:00Z',
     stageHistory: [
       { stage: 'NOT STARTED', timestamp: '2026-04-01T11:00:00Z', actor: 'Vikram Iyer' },
-      { stage: 'FLOORPLAN',   timestamp: '2026-04-02T14:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'IN PROGRESS', timestamp: '2026-04-04T09:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'DRC',         timestamp: '2026-04-07T10:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'LVS',         timestamp: '2026-04-09T11:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'REVIEW',      timestamp: '2026-04-12T09:00:00Z', actor: 'Arjun Mehta' },
+      { stage: 'FLOORPLAN',   timestamp: '2026-04-02T14:00:00Z', actor: 'Lokith K' },
+      { stage: 'IN PROGRESS', timestamp: '2026-04-04T09:00:00Z', actor: 'Lokith K' },
+      { stage: 'DRC',         timestamp: '2026-04-07T10:00:00Z', actor: 'Lokith K' },
+      { stage: 'LVS',         timestamp: '2026-04-09T11:00:00Z', actor: 'Lokith K' },
+      { stage: 'REVIEW',      timestamp: '2026-04-12T09:00:00Z', actor: 'Lokith K' },
     ],
   },
   {
@@ -230,9 +232,9 @@ const blocks = [
     createdAt: '2026-04-03T09:00:00Z',
     stageHistory: [
       { stage: 'NOT STARTED', timestamp: '2026-04-03T09:00:00Z', actor: 'Vikram Iyer' },
-      { stage: 'FLOORPLAN',   timestamp: '2026-04-04T11:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'IN PROGRESS', timestamp: '2026-04-05T10:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'DRC',         timestamp: '2026-04-10T14:00:00Z', actor: 'Arjun Mehta' },
+      { stage: 'FLOORPLAN',   timestamp: '2026-04-04T11:00:00Z', actor: 'Lokith K' },
+      { stage: 'IN PROGRESS', timestamp: '2026-04-05T10:00:00Z', actor: 'Lokith K' },
+      { stage: 'DRC',         timestamp: '2026-04-10T14:00:00Z', actor: 'Lokith K' },
     ],
   },
   {
@@ -242,9 +244,9 @@ const blocks = [
     createdAt: '2026-04-06T09:00:00Z',
     stageHistory: [
       { stage: 'NOT STARTED', timestamp: '2026-04-06T09:00:00Z', actor: 'Vikram Iyer' },
-      { stage: 'FLOORPLAN',   timestamp: '2026-04-07T11:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'IN PROGRESS', timestamp: '2026-04-08T10:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'DRC',         timestamp: '2026-04-12T09:00:00Z', actor: 'Arjun Mehta' },
+      { stage: 'FLOORPLAN',   timestamp: '2026-04-07T11:00:00Z', actor: 'Lokith K' },
+      { stage: 'IN PROGRESS', timestamp: '2026-04-08T10:00:00Z', actor: 'Lokith K' },
+      { stage: 'DRC',         timestamp: '2026-04-12T09:00:00Z', actor: 'Lokith K' },
     ],
   },
   {
@@ -266,9 +268,9 @@ const blocks = [
     createdAt: '2026-04-07T10:00:00Z',
     stageHistory: [
       { stage: 'NOT STARTED', timestamp: '2026-04-07T10:00:00Z', actor: 'Vikram Iyer' },
-      { stage: 'FLOORPLAN',   timestamp: '2026-04-08T09:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'IN PROGRESS', timestamp: '2026-04-10T10:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'DRC',         timestamp: '2026-04-14T09:00:00Z', actor: 'Arjun Mehta' },
+      { stage: 'FLOORPLAN',   timestamp: '2026-04-08T09:00:00Z', actor: 'Lokith K' },
+      { stage: 'IN PROGRESS', timestamp: '2026-04-10T10:00:00Z', actor: 'Lokith K' },
+      { stage: 'DRC',         timestamp: '2026-04-14T09:00:00Z', actor: 'Lokith K' },
     ],
   },
 
@@ -280,8 +282,8 @@ const blocks = [
     createdAt: '2026-04-05T10:00:00Z',
     stageHistory: [
       { stage: 'NOT STARTED', timestamp: '2026-04-05T10:00:00Z', actor: 'Vikram Iyer' },
-      { stage: 'FLOORPLAN',   timestamp: '2026-04-06T09:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'IN PROGRESS', timestamp: '2026-04-08T11:00:00Z', actor: 'Arjun Mehta' },
+      { stage: 'FLOORPLAN',   timestamp: '2026-04-06T09:00:00Z', actor: 'Lokith K' },
+      { stage: 'IN PROGRESS', timestamp: '2026-04-08T11:00:00Z', actor: 'Lokith K' },
     ],
   },
   {
@@ -302,8 +304,8 @@ const blocks = [
     createdAt: '2026-04-08T09:00:00Z',
     stageHistory: [
       { stage: 'NOT STARTED', timestamp: '2026-04-08T09:00:00Z', actor: 'Vikram Iyer' },
-      { stage: 'FLOORPLAN',   timestamp: '2026-04-09T10:00:00Z', actor: 'Arjun Mehta' },
-      { stage: 'IN PROGRESS', timestamp: '2026-04-11T09:00:00Z', actor: 'Arjun Mehta' },
+      { stage: 'FLOORPLAN',   timestamp: '2026-04-09T10:00:00Z', actor: 'Lokith K' },
+      { stage: 'IN PROGRESS', timestamp: '2026-04-11T09:00:00Z', actor: 'Lokith K' },
     ],
   },
   {
@@ -348,7 +350,7 @@ const blocks = [
     createdAt: '2026-04-08T11:00:00Z',
     stageHistory: [
       { stage: 'NOT STARTED', timestamp: '2026-04-08T11:00:00Z', actor: 'Vikram Iyer' },
-      { stage: 'FLOORPLAN',   timestamp: '2026-04-10T10:00:00Z', actor: 'Arjun Mehta' },
+      { stage: 'FLOORPLAN',   timestamp: '2026-04-10T10:00:00Z', actor: 'Lokith K' },
     ],
   },
   {
@@ -428,8 +430,8 @@ const seedDB = async () => {
     await Block.insertMany(blocks);
 
     console.log(`✓ Seeded ${users.length} users and ${blocks.length} blocks.`);
-    console.log(`  Manager : ${MGR}`);
-    console.log(`  Engineer (you): ${E1} — ${blocks.filter(b => b.assignedTo === E1).length} blocks assigned`);
+    console.log(`  Managers: ${MGR1}, ${MGR2}`);
+    console.log(`  Engineer (Lokith): ${E1} — ${blocks.filter(b => b.assignedTo === E1).length} blocks assigned`);
     process.exit(0);
   } catch (err) {
     console.error('Seed error:', err);

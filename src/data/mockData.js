@@ -31,18 +31,8 @@ export const techNodeColors = {
 
 export const TAPEOUT_DATE = new Date('2026-05-30T00:00:00Z');
 
-// Static fallback engineers (used only for initialAuditLog builder below).
-// The live list is fetched from /api/users and replaces this cache at runtime.
-export const engineers = [
-  { id: 'muthu1410raj@gmail.com',     email: 'muthu1410raj@gmail.com',     name: 'Arjun Mehta',   initials: 'AM', role: 'engineer', maxHours: 120 },
-  { id: 'priya.nair@layoutiq.com',    email: 'priya.nair@layoutiq.com',    name: 'Priya Nair',    initials: 'PN', role: 'engineer', maxHours: 120 },
-  { id: 'karthik.rajan@layoutiq.com', email: 'karthik.rajan@layoutiq.com', name: 'Karthik Rajan', initials: 'KR', role: 'engineer', maxHours: 120 },
-  { id: 'divya.suresh@layoutiq.com',  email: 'divya.suresh@layoutiq.com',  name: 'Divya Suresh',  initials: 'DS', role: 'engineer', maxHours: 120 },
-  { id: 'sneha.patel@layoutiq.com',   email: 'sneha.patel@layoutiq.com',   name: 'Sneha Patel',   initials: 'SP', role: 'engineer', maxHours: 120 },
-];
-
 // Live cache — replaced by API response in AppDataContext on mount.
-let _engineersCache = [...engineers];
+let _engineersCache = [];
 
 export function setEngineersCache(list) {
   _engineersCache = list;
